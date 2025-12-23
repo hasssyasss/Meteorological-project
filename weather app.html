@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: sans-serif;
+            background: linear-gradient(to bottom, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bigbox {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            margin-bottom: 10px;
+            color: rgb(7, 37, 71)
+        }
+
+        button {
+            width: 95%;
+            padding: 5px;
+            border-radius: 12px;
+            border: none;
+            background-color: #4a69bd;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #1e3799;
+        }
+
+        #result {
+            margin-top: 15px;
+            color: #fff;
+        }
+
+        .weather-icon {
+            width: 80px;
+            margin: 5px auto;
+        }
+
+
+        .temp {
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .status {
+            text-transform: capitalize;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bigbox">
+        <input id="city" type="text" placeholder="Enter city name">
+        <button id="btn">Search</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let btn = document.querySelector("#btn");
+        let result = document.querySelector("#result");
+
+        function getWeather() {
+            let city = document.querySelector("#city").value;
+
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ceccbb464862f5fe2452f3c2843930d3&units=metric`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("API error");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let icon = data.weather[0].icon;
+
+                    result.innerHTML = `
+                <h2>${data.name}</h2>
+                <img 
+                    class="weather-icon"
+                    src="https://openweathermap.org/img/wn/${icon}@2x.png"
+                >
+                <div class="temp">${Math.round(data.main.temp)}°C</div>
+                <div class="status">${data.weather[0].description}</div>
+            `;
+                })
+                .catch(() => {
+                    result.innerHTML = "❌ City not found";
+                });
+        }
+        btn.addEventListener("click", getWeather);
+        document.querySelector("#city").addEventListener("keydown", function (e) {
+            if (e.key === "Enter")
+                getWeather();
+        });
+
+    </script>
+
+</body>
+
+</html>
